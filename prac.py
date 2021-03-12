@@ -1,11 +1,17 @@
-import pandas as pd
-import math
+## Import required modules
+# Import system modules
 import os
 import json
-import nltk 
-import numpy as np
+
 import re
+import math
+
+# Import 3rd-party modules
+import pandas as pd
+import numpy as np
+import nltk 
 import openpyxl
+
 from openpyxl import Workbook
 from nltk.stem import wordnet # to perform lemmitization
 from sklearn.feature_extraction.text import CountVectorizer # to perform bow
@@ -24,26 +30,27 @@ sheet['B1']='Answer'
 
 
 
-files=[]
-contents=os.listdir('/mnt/d/cs/專題/covid19')
-for i in contents:
-	if i.endswith('.jsonl'):
-		files.append(i)
 
+files=[]
+contents=os.listdir('/mnt/d/cs/CsieProject/chatbot/data/raw')
+for i in contents:
+    if i.endswith('.jsonl'):
+        files.append(i)
 
 File=list()
 for i in files:
-	with open(i,'r') as data:
-		data=list(data)
-		File.extend(data)
+    i='/mnt/d/cs/CsieProject/chatbot/data/raw/'+i
+    with open(i,'r') as data:
+        data=list(data)
+        File.extend(data)
 
 
 question=[]
 answer=[]
 for i in range(8498):
-	data=json.loads(File[i])
-	question.append(data["questionText"])
-	answer.append(data["answerText"])
+    data=json.loads(File[i])
+    question.append(data["questionText"])
+    answer.append(data["answerText"])
 
 data={}
 data["Context"]=question
@@ -54,12 +61,13 @@ df=pd.DataFrame(data)
 
 
 def step1(x):
-	for i in x:
-		a=str(i).lower()
-		p=re.sub(r'[^a-z0-9]',' ',a)
-		#print(p)
+    for i in x:
+        a=str(i).lower()
+        p=re.sub(r'[^a-z0-9]',' ',a)
+        #print(p)
+
 #step1(df['Context'])
-		
+        
 # word tokenizing
 s='tell me about your personality'
 words=word_tokenize(s)
@@ -74,25 +82,26 @@ lemma.lemmatize('absorbed', pos = 'v')
 # function that performs text normalization steps
 
 def text_normalization(text):
-	text=str(text).lower() # text to lower case
-	spl_char_text=re.sub(r'[^ a-z]','',text) # removing special characters
-	tokens=nltk.word_tokenize(spl_char_text) # word tokenizing
-	lema=wordnet.WordNetLemmatizer() # intializing lemmatization
-	tags_list=pos_tag(tokens,tagset=None) # parts of speech
-	lema_words=[]   # empty list 
-	for token,pos_token in tags_list:
-		if pos_token.startswith('V'):  # Verb
-			pos_val='v'
-		elif pos_token.startswith('J'): # Adjective
-			pos_val='a'
-		elif pos_token.startswith('R'): # Adverb
-			pos_val='r'														
-		else:
-			pos_val='n' # Noun
-		lema_token=lema.lemmatize(token,pos_val) # performing lemmatization
-		lema_words.append(lema_token) # appending the lemmatized token into a list
-	
-	return " ".join(lema_words) # returns the lemmatized tokens as a sentence
+    text=str(text).lower() # text to lower case
+    spl_char_text=re.sub(r'[^ a-z]','',text) # removing special characters
+    tokens=nltk.word_tokenize(spl_char_text) # word tokenizing
+    lema=wordnet.WordNetLemmatizer() # intializing lemmatization
+    tags_list=pos_tag(tokens,tagset=None) # parts of speech
+    lema_words=[]   # empty list 
+    for token,pos_token in tags_list:
+        if pos_token.startswith('V'):  # Verb
+            pos_val='v'
+        elif pos_token.startswith('J'): # Adjective
+            pos_val='a'
+        elif pos_token.startswith('R'): # Adverb
+            pos_val='r'                                                        
+        else:
+            pos_val='n' # Noun
+        lema_token=lema.lemmatize(token,pos_val) # performing lemmatization
+        lema_words.append(lema_token) # appending the lemmatized token into a list
+    
+    return " ".join(lema_words) # returns the lemmatized tokens as a sentence
+
 
 #print(text_normalization('telling you some stuff about me: I am a data scientist '))
 
@@ -127,11 +136,11 @@ Question ='Will you help me and tell me about yourself more' # considering an ex
 Q=[]
 a=Question.split()
 for i in a:
-	if i in stop:
-		continue
-	else:
-		Q.append(i)
-		b=" ".join(Q)
+    if i in stop:
+        continue
+    else:
+        Q.append(i)
+        b=" ".join(Q)
 Question_lemma = text_normalization(b) # applying the function that we created for text normalizing
 Question_bow = cv.transform([Question_lemma]).toarray() # applying bow
 
@@ -175,12 +184,15 @@ Question1 ='Tell me about yourself.'
 tfidf=TfidfVectorizer() # intializing tf-id 
 x_tfidf=tfidf.fit_transform(df['lemmatized_text']).toarray() # transforming the data into array
 
+
+
 Question_lemma1 = text_normalization(Question1)
 Question_tfidf = tfidf.transform([Question_lemma1]).toarray() # applying tf-idf
 
 # returns all the unique word from data with a score of that word
 
 df_tfidf=pd.DataFrame(x_tfidf,columns=tfidf.get_feature_names()) 
+
 #df_tfidf.head()
 
 cos=1-pairwise_distances(df_tfidf,Question_tfidf,metric='cosine')  # applying cosine similarity
@@ -209,24 +221,24 @@ index_value1 = cos.argmax() # returns the index number of highest value
 # Function that removes stop words and process the text
 
 def stopword_(text):   
-	tag_list=pos_tag(nltk.word_tokenize(text),tagset=None)
-	stop=stopwords.words('english')
-	lema=wordnet.WordNetLemmatizer()
-	lema_word=[]
-	for token,pos_token in tag_list:
-		if token in stop:
-			continue
-		if pos_token.startswith('V'):
-			pos_val='v'
-		elif pos_token.startswith('J'):
-			pos_val='a'
-		elif pos_token.startswith('R'):
-			pos_val='r'
-		else:
-			pos_val='n'
-		lema_token=lema.lemmatize(token,pos_val)
-		lema_word.append(lema_token)
-	return " ".join(lema_word)
+    tag_list=pos_tag(nltk.word_tokenize(text),tagset=None)
+    stop=stopwords.words('english')
+    lema=wordnet.WordNetLemmatizer()
+    lema_word=[]
+    for token,pos_token in tag_list:
+        if token in stop:
+            continue
+        if pos_token.startswith('V'):
+            pos_val='v'
+        elif pos_token.startswith('J'):
+            pos_val='a'
+        elif pos_token.startswith('R'):
+            pos_val='r'
+        else:
+            pos_val='n'
+        lema_token=lema.lemmatize(token,pos_val)
+        lema_word.append(lema_token)
+    return " ".join(lema_word)
 
 
 
@@ -234,12 +246,12 @@ def stopword_(text):
 # defining a function that returns response to query using bow
 
 def chat_bow(text):
-	s=stopword_(text)
-	lemma=text_normalization(s) # calling the function to perform text normalization
-	bow=cv.transform([lemma]).toarray() # applying bow
-	cosine_value = 1- pairwise_distances(df_bow,bow, metric = 'cosine' )
-	index_value=cosine_value.argmax() # getting index value 
-	return df['Answer'].loc[index_value]
+    s=stopword_(text)
+    lemma=text_normalization(s) # calling the function to perform text normalization
+    bow=cv.transform([lemma]).toarray() # applying bow
+    cosine_value = 1- pairwise_distances(df_bow,bow, metric = 'cosine' )
+    index_value=cosine_value.argmax() # getting index value 
+    return df['Answer'].loc[index_value]
 
 
 
@@ -250,11 +262,13 @@ def chat_bow(text):
 # defining a function that returns response to query using tf-idf
 
 def chat_tfidf(text):
-	lemma=text_normalization(text) # calling the function to perform text normalization
-	tf=tfidf.transform([lemma]).toarray() # applying tf-idf
-	cos=1-pairwise_distances(df_tfidf,tf,metric='cosine') # applying cosine similarity
-	index_value=cos.argmax() # getting index value
-	return df['Answer'].loc[index_value]
+    lemma=text_normalization(text) # calling the function to perform text normalization
+    tf=tfidf.transform([lemma]).toarray() # applying tf-idf
+    print(df_tfidf.shape)
+    print(tf)
+    cos=1-pairwise_distances(df_tfidf,tf,metric='cosine') # applying cosine similarity
+    index_value=cos.argmax() # getting index value
+    return df['Answer'].loc[index_value]
 
 
 
@@ -262,9 +276,9 @@ print('*****************************************************')
 x=[input("YOUR QUERY: \n")]
 
 while(x[0].lower() not in ['bye','thanks','ok','cya']):
-	print("\n\nBOT: ",chat_tfidf(x))
-	x=[input("YOUR QUERY :")]
-	sheet.append([x[0],chat_tfidf(x)])
+    print("\n\nBOT: ",chat_tfidf(x))
+    x=[input("YOUR QUERY :")]
+    sheet.append([x[0],chat_tfidf(x)])
 print("\nBye !! Stay Safe!!")
 print('*****************************************************')
 
