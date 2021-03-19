@@ -13,3 +13,8 @@ source venv/bin/activate
 # Install requirements
 cat requirements.txt | xargs -n 1 pip install
 ```
+
+## TODO
+- [simpletransformers.ai](https://simpletransformers.ai)
+- [flask](https://flask.palletsprojects.com/en/1.1.x/)
+
