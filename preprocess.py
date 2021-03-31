@@ -20,7 +20,11 @@ from nltk import pos_tag # for parts of speech
 from sklearn.metrics import pairwise_distances # to perfrom cosine similarity
 from nltk import word_tokenize # to create tokens
 from nltk.corpus import stopwords # for stop words
+import nltk
 
+#nltk.download('punkt')
+#nltk.download('averaged_perceptron_tagger')
+#nltk.download('wordnet')
 # Import self-written modules
 
 ## Function
@@ -29,7 +33,7 @@ def preprocess():
     # Load data and files store all jsonl names
     files = list()
     ###Do not write dead and shorten the code
-    contents = os.listdir('/mnt/d/cs/CsieProject/chatbot/data/raw')
+    contents = os.listdir('/home/E14052013/chatbot/data/raw')
     for i in contents:
         if i.endswith('.jsonl'):
             files.append(i)
@@ -38,7 +42,7 @@ def preprocess():
 
     File = list()
     for i in files:
-        i = '/mnt/d/cs/CsieProject/chatbot/data/raw/'+i
+        i = '/home/E14052013/chatbot/data/raw/'+i
         with open(i,'r') as data:
             data = list(data)
             File.extend(data)
@@ -63,8 +67,40 @@ def preprocess():
     df['Normalized'] = df['Context'].apply(text_normalization)
 
     df.to_csv("preprocessed.csv")
+    """
+    #This part will process evaluation data
+    train_data_len = round(len(File)*0.8)
+    total_data_len = len(File)
+    question.clear()
+    answer.clear()
 
-    return df
+    for i in trange (train_data_len):
+        data = json.loads(File[i])
+        question.append(data["questionText"])
+        answer.append(data["answerText"])
+
+    train_data = {}
+    train_data["Context"] = question
+    train_data["Answer"] = answer
+    df_train = pd.DataFrame(train_data)
+    df_train['Normalized'] = df_train['Context'].apply(text_normalization)
+    
+
+    question.clear()
+    answer.clear()
+    
+    for i in trange (train_data_len, total_data_len):
+        data = json.loads(File[i])
+        question.append(data["questionText"])
+        answer.append(data["answerText"])
+    
+    eval_data = {}
+    eval_data["Context"] = question
+    eval_data["Answer"] = answer
+    df_eval = pd.DataFrame(eval_data)
+    df_eval['Normalized'] = df_eval['Context'].apply(text_normalization)"""
+
+    return df#, df_train, df_eval
 
 
 # function that performs text normalization steps

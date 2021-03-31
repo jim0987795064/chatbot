@@ -1,6 +1,8 @@
 ## Import required modules
 # Import system modules
 import os
+import sys
+
 
 # Import 3rd-party modules
 
@@ -11,26 +13,31 @@ import os
 
 #from model import chat_tfidf
 from models.tfidf import TFIDFModel
+from models.bert import BERTModel
 from preprocess import preprocess
 from preprocess import text_normalization
 
 ## GLOBAL variables
 # TIME = time.time()
 
-def main(args):
+def main(argv):
     ## Preprocess corpus
+    #corpus, train_data, eval_data = preprocess()
     corpus = preprocess()
-
     ## Run model (embedding)
-    if args["model"] == "tfidf":
+    if argv[1] == "tfidf":
         # fit TF-IDF
         model = TFIDFModel()
         pass
     else:
+        model = BERTModel()
         pass
 
     # train() / fit()
     model.fit(corpus)
+    #print(train_data)
+    #print(eval_data)
+
     # eval()
 
     ## Deploy
@@ -42,11 +49,10 @@ def main(args):
 
 ## Main script
 if __name__ == '__main__':
-    args = {
-        "model": "tfidf"
-    }
 
-    main(args)
+
+    main(sys.argv)
+
     # while(x[0].lower() not in ['bye','thanks','ok','cya']):
     #     print("\n\nBOT: ", chat_tfidf(x))
     #     x = input("YOUR QUERY :")
