@@ -33,7 +33,7 @@ def preprocess():
     # Load data and files store all jsonl names
     files = list()
     ###Do not write dead and shorten the code
-    contents = os.listdir('/home/E14052013/chatbot/data/raw')
+    contents = os.listdir('/mnt/d/cs/CsieProject/chatbot/data/raw')
     for i in contents:
         if i.endswith('.jsonl'):
             files.append(i)
@@ -42,7 +42,7 @@ def preprocess():
 
     File = list()
     for i in files:
-        i = '/home/E14052013/chatbot/data/raw/'+i
+        i = '/mnt/d/cs/CsieProject/chatbot/data/raw/'+i
         with open(i,'r') as data:
             data = list(data)
             File.extend(data)

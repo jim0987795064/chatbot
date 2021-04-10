@@ -14,7 +14,7 @@ class BERTModel():
         self.model = RepresentationModel(
             model_type="bert",
             model_name="bert-base-uncased",
-            use_cuda = True
+            use_cuda = False
         )
         self.corpus_vectors = self.model.encode_sentences(
             self.corpus['Normalized'], 
