@@ -20,11 +20,11 @@ from preprocess import text_normalization
 ## GLOBAL variables
 
 
-def main(model_name):
+def main(args):
     ## Preprocess corpus
     corpus = preprocess()
     ## Run model (embedding)
-    if model_name == "tfidf":
+    if args.model == "tfidf":
         # fit TF-IDF
         model = TFIDFModel()
         pass
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args.model)
+    main(args)
 
 
 
