@@ -4,3 +4,4 @@ scikit-learn==0.24.1
 pandas==1.2.3
 torch==1.8.0
 simpletransformers==0.61.3
+Flask==1.1.2

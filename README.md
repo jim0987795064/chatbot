@@ -17,4 +17,6 @@ cat requirements.txt | xargs -n 1 pip install
 ## TODO
 - [simpletransformers.ai](https://simpletransformers.ai)
 - [flask](https://flask.palletsprojects.com/en/1.1.x/)
+- evaluation :　bleu
+- Bert_Parameter : try and error
 
