@@ -5,6 +5,8 @@ from preprocess import text_normalization
 from sklearn.feature_extraction.text import TfidfVectorizer # to perform tfidf
 from sklearn.metrics.pairwise import cosine_similarity
 
+from Evaluation_Methods.bleu import bleu
+
 class TFIDFModel():
     def __init__(self, tokenizer=None):
         self.tokenizer = tokenizer
@@ -35,6 +37,7 @@ class TFIDFModel():
 
 
     def chat(self, text):
+        user_input = text
         text = text_normalization(text)
         text = self.vectorizer.transform([text]).toarray()
         
@@ -42,7 +45,7 @@ class TFIDFModel():
             self.corpus_embedding,
             text, 
         )
- 
+
         index_value = cos.argmax()
        
         return self.corpus['Answer'].loc[index_value]

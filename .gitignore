@@ -139,5 +139,6 @@ cython_debug/
 
 *.xlsx
 
-train_practice.py
+website
 
+Evaluation_Methods

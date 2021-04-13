@@ -1,6 +1,9 @@
+
 from simpletransformers.language_representation import RepresentationModel
 
 from sklearn.metrics.pairwise import cosine_similarity
+
+ 
 
 class BERTModel():
     def __init__(self):
@@ -23,6 +26,7 @@ class BERTModel():
 
             
     def chat(self, text):
+        text = [text]
         text_vector = self.model.encode_sentences(
             text, 
             combine_strategy = "mean"
@@ -33,7 +37,8 @@ class BERTModel():
             text_vector, 
         )
         index_value = cos.argmax()
-
+        
+        
         return self.corpus['Answer'].loc[index_value]
 
     
